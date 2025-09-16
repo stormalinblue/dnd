@@ -1,0 +1,17 @@
+FROM node:24.8-alpine3.21
+
+RUN adduser -S user
+USER user
+
+WORKDIR /home/user/app
+
+COPY --chown=user:user package.json package-lock.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 5173
+
+CMD [ "npm", "run", "dev" ]
+

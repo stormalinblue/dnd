@@ -1,0 +1,15 @@
+services:
+  vite_app_dev:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"  # Expose the Vite development server port
+    develop:
+      watch:
+      - action: sync
+        path: ./client/src
+        target: /home/user/app/src
+      - action: rebuild
+        path: ./client/package.json
+        target: /home/user/app/src/package.json
