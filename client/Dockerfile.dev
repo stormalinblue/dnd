@@ -9,7 +9,7 @@ COPY --chown=user:user package.json package-lock.json ./
 
 RUN npm install
 
-COPY . .
+COPY --chown=user:user . .
 
 EXPOSE 5173
 
