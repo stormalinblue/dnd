@@ -2,8 +2,21 @@ import React, { useRef, useLayoutEffect } from "react";
 import { useFeed, type FeedItem } from "./feed";
 import { ResultView } from "./ResultView";
 
+function DateTag(props: {date: Date}) {
+    const iso = props.date.toISOString()
+
+    return <time dateTime={iso}>{props.date.toLocaleString()}</time>
+}
+
 function FeedItemView(props: {item: FeedItem}): React.ReactNode {
-    
+    switch (props.item.kind) {
+        case 'result':
+            return <div>
+                <ResultView result={props.item.data} level={0} />
+                <DateTag date={props.item.date} />
+            </div>
+    }
+   
 }
 
 export function FeedView(): React.ReactNode {
@@ -18,8 +31,8 @@ export function FeedView(): React.ReactNode {
 
     return <div ref={feedRef} style={{ display: 'flex', flexDirection: 'column-reverse', height: '100%', overflowY: 'auto', scrollBehavior: 'smooth' }}>
         {
-            feedItems.map((result) => {
-                return <ResultView result={result} level={0} />
+            feedItems.map((item) => {
+                return <FeedItemView item={item} />
             })
         }
     </div>

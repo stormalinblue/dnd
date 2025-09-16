@@ -1,6 +1,14 @@
+import type React from "react";
 import { AbilityScoreTable } from "./AbilityScoreTable";
 import { CHARACTER } from "./character";
 import { SkillTable } from "./SkillTable";
+import { WeaponTable } from "./WeaponTable";
+
+function CharacterDetailSection(props: { children: React.ReactNode }) {
+  return <div>
+    {props.children}
+  </div>
+}
 
 export function CharacterDetail() {
   const character = CHARACTER;
@@ -28,13 +36,21 @@ export function CharacterDetail() {
 
   return <>
     <h1>{character.name}</h1>
-    <h2>Classes</h2>
-    {classTable}
-    <h2>Ability Scores</h2>
-    <AbilityScoreTable character={CHARACTER} />
-    <h2>Skills</h2>
-    <SkillTable character={CHARACTER} />
-    <h2>Weapons</h2>
-
+    <CharacterDetailSection>
+      <h2>Classes</h2>
+      {classTable}
+    </CharacterDetailSection>
+    <CharacterDetailSection>
+      <h2>Ability Scores</h2>
+      <AbilityScoreTable character={CHARACTER} />
+    </CharacterDetailSection>
+    <CharacterDetailSection>
+      <h2>Skills</h2>
+      <SkillTable character={CHARACTER} />
+    </CharacterDetailSection>
+    <CharacterDetailSection>
+      <h2>Weapons</h2>
+      <WeaponTable />
+    </CharacterDetailSection>
   </>
 }

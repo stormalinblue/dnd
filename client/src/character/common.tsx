@@ -1,15 +1,19 @@
 import { type Expression, evaluateExpression } from "../expr/expr";
-import { useFeed } from "../feed/feed";
+import { useFeed, feedItemFromResult } from "../feed/feed";
 
 export function ModifierLabel(props: { modifier: number }): React.ReactNode {
   return props.modifier >= 0 ? `+${props.modifier}` : props.modifier.toString();
 }
 
 export function D20RollButton(props: { tag: string, expr: Expression }) {
-  const { addToFeed } = useFeed();
+  const { feedItems, addToFeed } = useFeed();
+
+  const exprKey = feedItems.length.toString();
 
   return <button onClick={() => {
-    addToFeed(evaluateExpression(props.expr))
+    addToFeed(
+      feedItemFromResult(
+        evaluateExpression(props.expr), exprKey))
   }}>
     Roll {props.tag}
   </button>

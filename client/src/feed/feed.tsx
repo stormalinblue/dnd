@@ -1,12 +1,27 @@
 import { createContext, useContext, useState } from "react";
 import type { Result } from "../expr/expr";
 
-export interface FeedItemOf<T> {
-  date: Date,
-  data: T
+export interface BaseFeedItem {
+  kind: string,
+  key: string
 }
 
-export type FeedItem = FeedItemOf<Result>;
+export interface ResultFeedItem extends BaseFeedItem {
+  kind: 'result',
+  date: Date,
+  data: Result
+}
+
+export type FeedItem = ResultFeedItem
+
+export function feedItemFromResult(result: Result, key: string): ResultFeedItem {
+  return {
+    kind: 'result',
+    key: key,
+    date: new Date(),
+    data: result
+  }
+}
 
 export type FeedContextType = {
   feedItems: Array<FeedItem>;

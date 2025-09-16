@@ -66,6 +66,7 @@ export function AbilityScoreTable(props: { character: Character }): React.ReactN
       {
         mapAbilityMap(props.character.abilities, (_, abilityKey) => {
           return <AbilityScoreTableRow
+            key={abilityKey}
             character={props.character}
             abilityKey={abilityKey} />
         })
