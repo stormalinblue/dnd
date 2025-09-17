@@ -1,4 +1,4 @@
-import './App.scss'
+import './App.scss';
 
 import { FeedProvider } from './feed/feed';
 import { FeedView } from './feed/FeedView';
@@ -8,7 +8,14 @@ function App() {
   return (
     <>
       <FeedProvider>
-        <div style={{ display: 'flex', flexDirection: 'row', width: '100vw', height: '100vh' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            width: '100vw',
+            height: '100vh',
+          }}
+        >
           <div style={{ flex: 1, height: '100%', overflowY: 'scroll' }}>
             <CharacterDetail />
           </div>
@@ -18,8 +25,7 @@ function App() {
         </div>
       </FeedProvider>
     </>
-  )
+  );
 }
 
-export default App
-
+export default App;
