@@ -2,6 +2,7 @@ import type React from 'react';
 import {
   constant,
   d20,
+  d4,
   d6,
   d8,
   multiDieRoll,
@@ -124,6 +125,7 @@ export type WeaponCharacteristic = {
   name: string;
   attack: Expression;
   damage: WeaponDamage;
+  ability: AbilityKey | null;
   proficient: boolean;
   description?: React.ReactNode;
 };
@@ -165,16 +167,20 @@ export function characterWeapons(
 ): Array<WeaponCharacteristic> {
   function attackExpression(
     name: string,
-    abilityKey: AbilityKey,
+    abilityKey: AbilityKey | null,
     proficient: boolean,
     weaponBonus?: Expression
   ) {
-    const abilityModifierExpr = constant(
-      abilityModifier(character, abilityKey),
-      ABILITY_NAMES[abilityKey] + ' Modifier'
-    );
+    let parts: Array<Expression> = [d20()];
 
-    let parts: Array<Expression> = [d20(), abilityModifierExpr];
+    if (abilityKey !== null) {
+      const abilityModifierExpr = constant(
+        abilityModifier(character, abilityKey),
+        ABILITY_NAMES[abilityKey] + ' Modifier'
+      );
+
+      parts.push(abilityModifierExpr);
+    }
 
     if (proficient) {
       const proficiencyBonusExpr = constant(
@@ -193,16 +199,20 @@ export function characterWeapons(
 
   function damageExpression(
     name: string,
-    abilityKey: AbilityKey,
+    abilityKey: AbilityKey | null,
     dmgDie: Expression,
     weaponBonus?: Expression
   ) {
-    const abilityModifierExpr = constant(
-      abilityModifier(character, abilityKey),
-      ABILITY_NAMES[abilityKey] + ' Modifier'
-    );
+    let parts: Array<Expression> = [dmgDie];
 
-    let parts: Array<Expression> = [dmgDie, abilityModifierExpr];
+    if (abilityKey !== null) {
+      const abilityModifierExpr = constant(
+        abilityModifier(character, abilityKey),
+        ABILITY_NAMES[abilityKey] + ' Modifier'
+      );
+
+      parts.push(abilityModifierExpr);
+    }
 
     if (weaponBonus !== undefined) {
       parts.push(weaponBonus);
@@ -215,7 +225,7 @@ export function characterWeapons(
     name: string,
     damageType: string,
     proficient: boolean,
-    abilityKey: AbilityKey,
+    abilityKey: AbilityKey | null,
     dmgDie: Expression,
     description?: React.ReactNode,
     atkBonus?: Expression,
@@ -229,6 +239,7 @@ export function characterWeapons(
         type: damageType,
         total: damageExpression(name, abilityKey, dmgDie, dmgBonus),
       },
+      ability: abilityKey,
       description: description,
     };
   }
@@ -268,6 +279,22 @@ export function characterWeapons(
       'strength',
       d6(),
       <p>Range up to 120 ft. Disadvantage if throwing more than 60 ft.</p>
+    ),
+    weaponCharacteristic(
+      'Improvised Weapon',
+      'Unknown',
+      false,
+      'strength',
+      d4(),
+      <p>Range up to 60 ft. Disadvantage if throwing more than 20 ft.</p>
+    ),
+    weaponCharacteristic(
+      'Improvised Weapon',
+      'Unknown',
+      false,
+      'dexterity',
+      d4(),
+      <p>Range up to 60 ft. Disadvantage if throwing more than 20 ft.</p>
     ),
   ];
 }

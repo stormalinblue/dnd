@@ -1,5 +1,6 @@
 import type React from 'react';
 import {
+  ABILITY_NAMES,
   characterWeapons,
   type Character,
   type WeaponCharacteristic,
@@ -16,7 +17,8 @@ function WeaponTableRow(props: {
     <tr>
       <td>{weapon.name}</td>
       <td>{weapon.damage.type}</td>
-      <td>{weapon.proficient.toString()}</td>
+      <td>{weapon.ability !== null ? ABILITY_NAMES[weapon.ability] : 'NA'}</td>
+      <td>{weapon.proficient ? 'Yes' : 'No'}</td>
       <td>
         <EvaluateButton expr={weapon.attack} tag="Attack" />
       </td>
@@ -37,6 +39,7 @@ export function WeaponTable(props: { character: Character }): React.ReactNode {
         <tr>
           <th>Weapon Name</th>
           <th>Damage Type</th>
+          <th>Ability</th>
           <th>Proficient?</th>
           <th>Attack Rolls</th>
           <th>Damage Rolls</th>
