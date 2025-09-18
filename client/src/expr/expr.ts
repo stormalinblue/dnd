@@ -56,7 +56,7 @@ export type Result =
   | SumResult;
 
 /**
- * Begin convenience functions
+ * Begin convenience constructors
  */
 
 export function constant(value: number, name?: string): Constant {
@@ -73,6 +73,10 @@ export function makeDieRoll(die: number, name?: string): DieRoll {
     die: die,
     name: name,
   };
+}
+
+export function d4(name?: string): DieRoll {
+  return makeDieRoll(4, name);
 }
 
 export function d6(name?: string): DieRoll {
@@ -109,7 +113,91 @@ export function sum(children: Array<Expression>, name?: string): SumExpr {
 }
 
 /**
- * End convenience functions
+ * End convenience constructors
+ */
+
+/**
+ * Begin display utils
+ */
+
+function summarizeConstant(expr: Constant): string {
+  return expr.value.toString();
+}
+
+function summarizeDieRoll(expr: DieRoll): string {
+  return `d${expr.die}`;
+}
+
+function summarizeMultiDieRoll(expr: MultiDieRoll): string {
+  return `${expr.numDie}d${expr.die}`;
+}
+
+function summarizeSum(expr: SumExpr): string {
+  function getConstituents(exprs: Array<Expression>): {
+    dieRoll: Array<string>;
+    misc: Array<string>;
+    constant: number;
+  } {
+    let dieRollConstituents: Array<string> = [];
+    let miscConstituents: Array<string> = [];
+    let constantConstituent: number = 0;
+
+    for (const childExpr of exprs) {
+      switch (childExpr.kind) {
+        case 'constant':
+          constantConstituent += childExpr.value;
+          break;
+        case 'dieRoll':
+        case 'multiDieRoll':
+          dieRollConstituents.push(summarizeExpr(childExpr));
+          break;
+        case 'sumExpr':
+          const subResult = getConstituents(childExpr.children);
+          dieRollConstituents.push(...subResult.dieRoll);
+          miscConstituents.push(...subResult.misc);
+          constantConstituent += subResult.constant;
+          break;
+      }
+    }
+    return {
+      dieRoll: dieRollConstituents,
+      misc: miscConstituents,
+      constant: constantConstituent,
+    };
+  }
+
+  const allConstituents = getConstituents(expr.children);
+  let constituents = [
+    ...allConstituents.dieRoll,
+    ...allConstituents.misc
+  ];
+
+  let constituentString = constituents.join(' + ');
+
+  if (allConstituents.constant > 0) {
+    constituentString += ' + ' + allConstituents.constant.toString()
+  } else if (allConstituents.constant < 0) {
+    constituentString += ' - ' + (-allConstituents.constant).toString()
+  }
+
+  return constituentString;
+}
+
+export function summarizeExpr(expr: Expression): string {
+  switch (expr.kind) {
+    case 'constant':
+      return summarizeConstant(expr);
+    case 'dieRoll':
+      return summarizeDieRoll(expr);
+    case 'multiDieRoll':
+      return summarizeMultiDieRoll(expr);
+    case 'sumExpr':
+      return summarizeSum(expr);
+  }
+}
+
+/**
+ * End display utils
  */
 
 /**

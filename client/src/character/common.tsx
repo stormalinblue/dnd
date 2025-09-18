@@ -1,4 +1,4 @@
-import { type Expression, evaluateExpression } from '../expr/expr';
+import { type Expression, evaluateExpression, summarizeExpr } from '../expr/expr';
 import { useFeed, feedItemFromResult } from '../feed/feed';
 
 export function ModifierLabel(props: { modifier: number }): React.ReactNode {
@@ -16,7 +16,7 @@ export function EvaluateButton(props: { tag: string; expr: Expression }) {
         addToFeed(feedItemFromResult(evaluateExpression(props.expr), exprKey));
       }}
     >
-      Roll {props.tag}
+      Roll {props.tag}: {summarizeExpr(props.expr)}
     </button>
   );
 }
