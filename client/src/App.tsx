@@ -16,7 +16,7 @@ function App() {
             height: '100vh',
           }}
         >
-          <div style={{ flex: 1, height: '100%', overflowY: 'scroll' }}>
+          <div style={{ flex: 3, height: '100%', overflowY: 'scroll' }}>
             <CharacterDetail />
           </div>
           <div style={{ flex: 1, height: '100%' }}>
