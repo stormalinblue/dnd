@@ -1,4 +1,8 @@
-import { type Expression, evaluateExpression, summarizeExpr } from '../expr/expr';
+import {
+  type Expression,
+  evaluateExpression,
+  summarizeExpr,
+} from '../expr/expr';
 import { useFeed, feedItemFromResult } from '../feed/feed';
 
 export function ModifierLabel(props: { modifier: number }): React.ReactNode {
