@@ -19,20 +19,24 @@ function AbilityScoreTableRow(props: {
   const modifierExpr = constant(modifier, `${abilityName} Modifier`);
   const rollExpr = sum([d20(), modifierExpr], `${abilityName} Roll`);
 
-  let saveModifier: number = 0;
-  let saveExpression: Expression = constant(0);
-  let saveExprName = `${abilityName} Save`;
+  let saveModifier: number = modifier;
+  let saveSumParts: Array<Expression> = [d20(), modifierExpr];
+
   if (abilityCharacteristic.saveProficient) {
-    saveModifier = modifier + props.character.proficiencyBonus;
+    saveModifier += props.character.proficiencyBonus;
     const proficiencyExpr = constant(
       props.character.proficiencyBonus,
       'Proficiency Bonus'
     );
-    saveExpression = sum([d20(), modifierExpr, proficiencyExpr], saveExprName);
-  } else {
-    saveModifier = modifier;
-    saveExpression = sum([d20(), modifierExpr], saveExprName);
+    saveSumParts.push(proficiencyExpr);
   }
+
+  if (props.character.saveBonus > 0) {
+    saveModifier += props.character.saveBonus;
+    saveSumParts.push(constant(props.character.saveBonus, 'Save Bonus'));
+  }
+
+  const saveExpression = sum(saveSumParts, `${abilityName} Save`);
 
   const arrow = '\u2192';
 
@@ -59,7 +63,7 @@ function AbilityScoreTableRow(props: {
       <td>{abilityCharacteristic.saveProficient ? 'Yes' : 'No'}</td>
       <td className="align-right">{saveModifierLabel}</td>
       <td>
-        <EvaluateButton tag={saveExprName} expr={saveExpression} />
+        <EvaluateButton tag={saveExpression.name!} expr={saveExpression} />
       </td>
     </tr>
   );
@@ -69,29 +73,32 @@ export function AbilityScoreTable(props: {
   character: Character;
 }): React.ReactNode {
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Ability</th>
-          <th>Score</th>
-          <th>Modifier</th>
-          <th>Roll</th>
-          <th>Save Proficient?</th>
-          <th>Save Modifier</th>
-          <th>Roll Save</th>
-        </tr>
-      </thead>
-      <tbody>
-        {mapAbilityMap(props.character.abilities, (_, abilityKey) => {
-          return (
-            <AbilityScoreTableRow
-              key={abilityKey}
-              character={props.character}
-              abilityKey={abilityKey}
-            />
-          );
-        })}
-      </tbody>
-    </table>
+    <>
+      Save Bonus: <ModifierLabel modifier={props.character.saveBonus} />
+      <table>
+        <thead>
+          <tr>
+            <th>Ability</th>
+            <th>Score</th>
+            <th>Modifier</th>
+            <th>Roll</th>
+            <th>Save Proficient?</th>
+            <th>Save Modifier</th>
+            <th>Roll Save</th>
+          </tr>
+        </thead>
+        <tbody>
+          {mapAbilityMap(props.character.abilities, (_, abilityKey) => {
+            return (
+              <AbilityScoreTableRow
+                key={abilityKey}
+                character={props.character}
+                abilityKey={abilityKey}
+              />
+            );
+          })}
+        </tbody>
+      </table>
+    </>
   );
 }

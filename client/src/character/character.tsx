@@ -136,6 +136,7 @@ export type Character = {
   classList: Array<CharacterClass>;
   abilities: AbilityMap<AbilityCharacteristic>;
   proficiencyBonus: number;
+  saveBonus: number;
   skills: SkillMap<boolean>;
 };
 
@@ -152,6 +153,7 @@ export const CHARACTER: Character = {
     charisma: { score: 14, saveProficient: true },
   },
   proficiencyBonus: 3,
+  saveBonus: 1,
   skills: CHARACTER_SKILL_PROFICIENCIES,
 };
 
@@ -200,10 +202,14 @@ export function characterWeapons(
   function damageExpression(
     name: string,
     abilityKey: AbilityKey | null,
-    dmgDie: Expression,
+    dmgDie: Expression | null,
     weaponBonus?: Expression
   ) {
-    let parts: Array<Expression> = [dmgDie];
+    let parts: Array<Expression> = [];
+
+    if (dmgDie !== null) {
+      parts.push(dmgDie);
+    }
 
     if (abilityKey !== null) {
       const abilityModifierExpr = constant(
@@ -218,7 +224,7 @@ export function characterWeapons(
       parts.push(weaponBonus);
     }
 
-    return sum(parts, `${name} Damage Roll`);
+    return sum(parts, `${name} Damage`);
   }
 
   function weaponCharacteristic(
@@ -226,7 +232,7 @@ export function characterWeapons(
     damageType: string,
     proficient: boolean,
     abilityKey: AbilityKey | null,
-    dmgDie: Expression,
+    dmgDie: Expression | null,
     description?: React.ReactNode,
     atkBonus?: Expression,
     dmgBonus?: Expression
@@ -295,6 +301,16 @@ export function characterWeapons(
       'dexterity',
       d4(),
       <p>Range up to 60 ft. Disadvantage if throwing more than 20 ft.</p>
+    ),
+    weaponCharacteristic(
+      'Unarmed Strike',
+      'Bludgeoning',
+      true,
+      'strength',
+      null,
+      undefined,
+      undefined,
+      constant(1, 'Unarmed Strike Bonus')
     ),
   ];
 }
