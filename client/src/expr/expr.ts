@@ -133,54 +133,110 @@ function summarizeMultiDieRoll(expr: MultiDieRoll): string {
 }
 
 function summarizeSum(expr: SumExpr): string {
-  function getConstituents(exprs: Array<Expression>): {
-    dieRoll: Array<string>;
-    misc: Array<string>;
-    constant: number;
-  } {
-    let dieRollConstituents: Array<string> = [];
-    let miscConstituents: Array<string> = [];
-    let constantConstituent: number = 0;
+  type AddendComponent = {
+    negative: boolean;
+    absString: string;
+  };
 
-    for (const childExpr of exprs) {
+  type AddendGroups = {
+    dieRolls: Map<number, number>;
+    constant: number;
+  };
+
+  function getAddendGroups(expr: SumExpr): AddendGroups {
+    let result: AddendGroups = {
+      dieRolls: new Map(),
+      constant: 0,
+    };
+
+    for (const childExpr of expr.children) {
       switch (childExpr.kind) {
         case 'constant':
-          constantConstituent += childExpr.value;
+          result.constant += childExpr.value;
           break;
         case 'dieRoll':
+          {
+            const die = childExpr.die;
+            if (result.dieRolls.has(die)) {
+              result.dieRolls.set(die, 1 + result.dieRolls.get(die)!);
+            } else {
+              result.dieRolls.set(die, 1);
+            }
+          }
+          break;
         case 'multiDieRoll':
-          dieRollConstituents.push(summarizeExpr(childExpr));
+          {
+            const die = childExpr.die;
+            const mul = childExpr.numDie;
+            if (result.dieRolls.has(die)) {
+              result.dieRolls.set(die, mul + result.dieRolls.get(die)!);
+            } else {
+              result.dieRolls.set(die, mul);
+            }
+          }
           break;
         case 'sumExpr':
-          const subResult = getConstituents(childExpr.children);
-          dieRollConstituents.push(...subResult.dieRoll);
-          miscConstituents.push(...subResult.misc);
-          constantConstituent += subResult.constant;
-          break;
+          const subResult = getAddendGroups(childExpr);
+          subResult.dieRolls.forEach((mul, die) => {
+            const prevMul = result.dieRolls.has(die)
+              ? result.dieRolls.get(die)!
+              : 0;
+            result.dieRolls.set(die, prevMul + mul);
+          });
+          result.constant += subResult.constant;
       }
     }
-    return {
-      dieRoll: dieRollConstituents,
-      misc: miscConstituents,
-      constant: constantConstituent,
-    };
+
+    return result;
   }
 
-  const allConstituents = getConstituents(expr.children);
-  let constituents = [
-    ...allConstituents.dieRoll,
-    ...allConstituents.misc
-  ];
+  const groups = getAddendGroups(expr);
 
-  let constituentString = constituents.join(' + ');
+  const dice = [...groups.dieRolls.keys()];
+  dice.sort((a, b) => b - a);
 
-  if (allConstituents.constant > 0) {
-    constituentString += ' + ' + allConstituents.constant.toString()
-  } else if (allConstituents.constant < 0) {
-    constituentString += ' - ' + (-allConstituents.constant).toString()
+  let addends: Array<AddendComponent> = [];
+
+  for (const die of dice) {
+    const mul = groups.dieRolls.get(die)!;
+    let negative: boolean = mul < 0;
+    let prefix: string = '';
+    if (Math.abs(mul) === 1) {
+      prefix = 'd';
+    } else {
+      prefix = `${Math.abs(mul)}d`;
+    }
+
+    addends.push({
+      negative: negative,
+      absString: `${prefix}${die}`,
+    });
   }
 
-  return constituentString;
+  if (groups.constant !== 0) {
+    addends.push({
+      negative: groups.constant < 0,
+      absString: Math.abs(groups.constant).toString(),
+    });
+  }
+
+  return addends
+    .map((addend, index) => {
+      if (index === 0) {
+        if (addend.negative) {
+          return '-' + addend.absString;
+        } else {
+          return addend.absString;
+        }
+      } else {
+        if (addend.negative) {
+          return ' - ' + addend.absString;
+        } else {
+          return ' + ' + addend.absString;
+        }
+      }
+    })
+    .join('');
 }
 
 export function summarizeExpr(expr: Expression): string {
