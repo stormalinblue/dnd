@@ -15,7 +15,12 @@ function WeaponTableRow(props: {
 
   return (
     <tr>
-      <td>{weapon.name}</td>
+      <td>
+        {weapon.name}
+        <p>
+          <i>{weapon.description !== undefined ? weapon.description : <></>}</i>
+        </p>
+      </td>
       <td>{weapon.damage.type}</td>
       <td>{weapon.ability !== null ? ABILITY_NAMES[weapon.ability] : 'NA'}</td>
       <td>{weapon.proficient ? 'Yes' : 'No'}</td>
@@ -25,7 +30,7 @@ function WeaponTableRow(props: {
       <td>
         <EvaluateButton expr={weapon.damage.total} tag="Damage" />
       </td>
-      <td>{weapon.description !== undefined ? weapon.description : <></>}</td>
+      <td></td>
     </tr>
   );
 }
@@ -43,7 +48,6 @@ export function WeaponTable(props: { character: Character }): React.ReactNode {
           <th>Proficient?</th>
           <th>Attack Rolls</th>
           <th>Damage Rolls</th>
-          <th>Description</th>
         </tr>
       </thead>
       <tbody>
