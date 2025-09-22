@@ -3,6 +3,7 @@ import './App.scss';
 import { FeedProvider } from './feed/feed';
 import { FeedView } from './feed/FeedView';
 import { CharacterDetail } from './character/CharacterDetail';
+import { AllDie } from './icons/Die';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           }}
         >
           <div style={{ flex: 3, height: '100%', overflowY: 'scroll' }}>
+            <AllDie />
             <CharacterDetail />
           </div>
           <div style={{ flex: 1, height: '100%' }}>
