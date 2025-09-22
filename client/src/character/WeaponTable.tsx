@@ -30,7 +30,6 @@ function WeaponTableRow(props: {
       <td>
         <EvaluateButton expr={weapon.damage.total} tag="Damage" />
       </td>
-      <td></td>
     </tr>
   );
 }
