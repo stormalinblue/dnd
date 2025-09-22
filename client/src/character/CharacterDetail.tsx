@@ -4,8 +4,10 @@ import { CHARACTER } from './character';
 import { SkillTable } from './SkillTable';
 import { WeaponTable } from './WeaponTable';
 
+import './CharacterDetail.scss';
+
 function CharacterDetailSection(props: { children: React.ReactNode }) {
-  return <div>{props.children}</div>;
+  return <div className="character-detail-section">{props.children}</div>;
 }
 
 export function CharacterDetail() {

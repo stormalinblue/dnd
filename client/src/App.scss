@@ -1,5 +1,8 @@
 :root {
   // 🌐 Typography
+  --font-family-fancy:
+    font-family: 'Palatino Linotype', 'Book Antiqua', 'IM Fell English SC',
+    Palatino, serif;
   --font-family-base: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --font-size-base: 16px;
   --line-height-base: 1.6;
@@ -9,6 +12,7 @@
   // 🎨 Colors
   --color-text: #222;
   --color-background: #f9f9f9;
+  --color-scroll-background: #e5bd6b;
   --color-primary: #0078d4;
   --color-accent: #ff4081;
 
@@ -27,12 +31,12 @@
 }
 
 body {
-  font-family: var(--font-family-base);
+  font-family: var(--font-family-fancy);
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
   font-weight: var(--font-weight-normal);
   color: var(--color-text);
-  background-color: var(--color-background);
+  background-color: var(--color-scroll-background);
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
