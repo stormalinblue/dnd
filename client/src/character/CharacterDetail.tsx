@@ -1,12 +1,61 @@
 import type React from 'react';
 import { AbilityScoreTable } from './AbilityScoreTable';
-import { CHARACTER } from './character';
+import {
+  abilityModifier,
+  CHARACTER,
+  type Character,
+  type CharacterClass,
+} from './character';
 import { SkillTable } from './SkillTable';
 import { WeaponTable } from './WeaponTable';
 
 import './CharacterDetail.scss';
+import { EvaluateButton } from './common';
+import { d12, d10, d20, d4, d6, d8 } from '../expr/expr';
 
-function CharacterDetailSection(props: { children: React.ReactNode }) {
+function hitDie(cl: CharacterClass): number {
+  switch (cl.name) {
+    case 'Paladin':
+      return 10;
+    default:
+      throw new Error('Unrecognized class');
+  }
+}
+
+function maxHitPoints(character: Character): number {
+  const constitutionModifier = abilityModifier(character, 'constitution');
+
+  let hitPoints: number = 0;
+
+  for (const cl of character.classList) {
+    const die = hitDie(cl);
+    if (cl.initial) {
+      hitPoints += die + constitutionModifier;
+    }
+    hitPoints += cl.level * (constitutionModifier + Math.ceil(die / 2));
+  }
+
+  return hitPoints;
+}
+
+function HitPoints(props: { character: Character }): React.ReactNode {
+  return <>Maximum Hit Points: {maxHitPoints(props.character).toString()}</>;
+}
+
+function AllDieButtons(): React.ReactNode {
+  return (
+    <CharacterDetailSection>
+      <EvaluateButton expr={d4()} tag={'d4'} />
+      <EvaluateButton expr={d6()} tag={'d6'} />
+      <EvaluateButton expr={d8()} tag={'d8'} />
+      <EvaluateButton expr={d12()} tag={'d12'} />
+      <EvaluateButton expr={d10()} tag={'d10'} />
+      <EvaluateButton expr={d20()} tag={'d20'} />
+    </CharacterDetailSection>
+  );
+}
+
+function CharacterDetailSection(props: { children?: React.ReactNode }) {
   return <div className="character-detail-section">{props.children}</div>;
 }
 
@@ -39,6 +88,8 @@ export function CharacterDetail() {
   return (
     <>
       <h1>{character.name}</h1>
+      <HitPoints character={character} />
+      <AllDieButtons />
       <CharacterDetailSection>
         <h2>Classes</h2>
         {classTable}

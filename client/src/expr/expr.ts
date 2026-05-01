@@ -48,12 +48,30 @@ export interface SumResult extends BaseResult {
   children: Array<Result>;
 }
 
-export type Expression = Constant | DieRoll | MultiDieRoll | SumExpr;
+export interface StackExpr extends BaseExpression {
+  kind: 'stack';
+  child: Expression;
+  multiplicity: number;
+}
+
+export interface StackResult extends BaseResult {
+  kind: 'stack';
+  child: Result;
+  multiplicity: number;
+}
+
+export type Expression =
+  | Constant
+  | DieRoll
+  | MultiDieRoll
+  | SumExpr
+  | StackExpr;
 export type Result =
   | ConstantResult
   | DieRollResult
   | MultiDieRollResult
-  | SumResult;
+  | SumResult
+  | StackResult;
 
 /**
  * Begin convenience constructors
@@ -87,8 +105,20 @@ export function d8(name?: string): DieRoll {
   return makeDieRoll(8, name);
 }
 
+export function d10(name?: string): DieRoll {
+  return makeDieRoll(10, name);
+}
+
+export function d12(name?: string): DieRoll {
+  return makeDieRoll(12, name);
+}
+
 export function d20(name?: string): DieRoll {
   return makeDieRoll(20, name);
+}
+
+export function d100(name?: string): DieRoll {
+  return makeDieRoll(100, name);
 }
 
 export function multiDieRoll(
@@ -184,6 +214,8 @@ function summarizeSum(expr: SumExpr): string {
             result.dieRolls.set(die, prevMul + mul);
           });
           result.constant += subResult.constant;
+          break;
+        default:
       }
     }
 
@@ -249,6 +281,7 @@ export function summarizeExpr(expr: Expression): string {
       return summarizeMultiDieRoll(expr);
     case 'sumExpr':
       return summarizeSum(expr);
+    default:
   }
 }
 

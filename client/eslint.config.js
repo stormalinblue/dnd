@@ -20,4 +20,11 @@ export default tseslint.config([
       globals: globals.browser,
     },
   },
+  {
+    rules: {
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+      '@typescript-eslint/ban-tslint-comment': 'error',
+      '@typescript-eslint/explicit-function-return-type': 'error',
+    },
+  },
 ]);

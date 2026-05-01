@@ -114,6 +114,7 @@ const CHARACTER_SKILL_PROFICIENCIES: SkillMap<boolean> = {
 export type CharacterClass = {
   name: string;
   level: number;
+  initial: boolean;
 };
 
 type WeaponDamage = {
@@ -143,17 +144,17 @@ export type Character = {
 export const CHARACTER: Character = {
   name: 'Nemo',
   species: 'Half-Orc',
-  classList: [{ name: 'Paladin', level: 8 }],
+  classList: [{ name: 'Paladin', level: 9, initial: true}],
   abilities: {
-    strength: { score: 18, saveProficient: false },
+    strength: { score: 19, saveProficient: false },
     dexterity: { score: 10, saveProficient: false },
     constitution: { score: 14, saveProficient: false },
     intelligence: { score: 11, saveProficient: false },
     wisdom: { score: 8, saveProficient: true },
     charisma: { score: 14, saveProficient: true },
   },
-  proficiencyBonus: 3,
-  saveBonus: 1,
+  proficiencyBonus: 4,
+  saveBonus: 2,
   skills: CHARACTER_SKILL_PROFICIENCIES,
 };
 
